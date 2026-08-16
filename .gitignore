@@ -3,3 +3,4 @@ data/
 __pycache__/
 *.pyc
 submission.csv
+submission_optuna.csv
