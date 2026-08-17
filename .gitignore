@@ -7,3 +7,4 @@ submission_optuna.csv
 optuna_s6e8.db
 preds/
 submission_blend.csv
+submission_stack.csv
