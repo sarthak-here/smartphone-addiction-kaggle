@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 submission.csv
 submission_optuna.csv
+optuna_s6e8.db
