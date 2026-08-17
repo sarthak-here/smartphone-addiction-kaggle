@@ -169,7 +169,7 @@ def run_blend():
     train = pd.read_csv(DATA / "train.csv")
     test = pd.read_csv(DATA / "test.csv")
     y = train[TARGET].values
-    names = [n for n in ("lgb", "xgb", "cat") if (PRED / f"oof_{n}.npy").exists()]
+    names = [n for n in ("lgb", "xgb", "cat", "mlp") if (PRED / f"oof_{n}.npy").exists()]
     if not names:
         print("no model preds found; run lgb/xgb/cat first")
         return
