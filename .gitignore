@@ -5,3 +5,5 @@ __pycache__/
 submission.csv
 submission_optuna.csv
 optuna_s6e8.db
+preds/
+submission_blend.csv
