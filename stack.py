@@ -131,26 +131,36 @@ def run_xgb():
 
 
 def run_cat():
+    import gc
     from catboost import CatBoostClassifier, Pool
     train, test, features = load()
     for c in BASE_CATS:
         train[c] = train[c].astype(str).fillna("NA")
         test[c] = test[c].astype(str).fillna("NA")
+    # float32 for numeric columns to roughly halve memory (avoid OOM on this size).
+    num_cols = [c for c in features if c not in BASE_CATS]
+    for c in num_cols:
+        train[c] = train[c].astype("float32")
+        test[c] = test[c].astype("float32")
     X, y, Xt = train[features], train[TARGET].values, test[features]
     cat_idx = [features.index(c) for c in BASE_CATS]
+    Xt_pool = Pool(Xt, cat_features=cat_idx)
     oof, tp = np.zeros(len(train)), np.zeros(len(test))
     for f, (tr, va) in enumerate(folds(y)):
-        m = CatBoostClassifier(iterations=2500, learning_rate=0.06, depth=7,
+        m = CatBoostClassifier(iterations=1500, learning_rate=0.07, depth=6,
                                l2_leaf_reg=6.0, loss_function="Logloss",
                                eval_metric="AUC", random_seed=SEED,
                                od_type="Iter", od_wait=100, verbose=0,
                                boosting_type="Plain", max_ctr_complexity=1,
-                               thread_count=-1, allow_writing_files=False)
+                               thread_count=4, used_ram_limit="6gb",
+                               allow_writing_files=False)
         m.fit(Pool(X.iloc[tr], y[tr], cat_features=cat_idx),
               eval_set=Pool(X.iloc[va], y[va], cat_features=cat_idx))
         oof[va] = m.predict_proba(X.iloc[va])[:, 1]
-        tp += m.predict_proba(Xt)[:, 1] / N_FOLDS
-        print(f"  fold {f}: {roc_auc_score(y[va], oof[va]):.5f}")
+        tp += m.predict_proba(Xt_pool)[:, 1] / N_FOLDS
+        print(f"  fold {f}: {roc_auc_score(y[va], oof[va]):.5f}", flush=True)
+        del m
+        gc.collect()
     save("cat", oof, tp, roc_auc_score(y, oof))
 
 
