@@ -11,6 +11,8 @@ An end-to-end tabular machine-learning solution for Kaggle Playground Series S6E
 | LightGBM + XGBoost blend | 0.96486 | 0.96627 | 0.96604 |
 | **Five-model logistic meta-stack** | **0.96516** | **0.96661** | **0.96634** |
 
+**Public leaderboard rank: 1,343 out of 3,532 teams.**
+
 The final stack improved consistently from local out-of-fold validation to both public and private leaderboard evaluation.
 
 ## Approach
